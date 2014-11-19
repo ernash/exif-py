@@ -111,14 +111,16 @@ def main():
             logger.info('File has TIFF thumbnail')
             del data['TIFFThumbnail']
 
-        tag_keys = list(data.keys())
-        tag_keys.sort()
-
-        for i in tag_keys:
-            try:
-                logger.info('%s (%s): %s', i, FIELD_TYPES[data[i].field_type][2], data[i].printable)
-            except:
-                logger.error("%s : %s", i, str(data[i]))
+        ifd_keys = list(data.keys())
+        ifd_keys.sort()
+        for ifd in ifd_keys:
+            tag_keys = list(data[ifd].keys())
+            tag_keys.sort()
+            for tag in tag_keys:
+                #try:
+                logger.info('%s %s (%s): %s', ifd, tag, FIELD_TYPES[data[ifd][tag].field_type][2], data[ifd][tag].printable)
+                #except:
+                #logger.error("%s : %s", i, str(data[i]))
 
         file_stop = timeit.default_timer()
 

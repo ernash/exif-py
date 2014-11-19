@@ -61,7 +61,7 @@ def process_file(f, stop_tag=DEFAULT_STOP_TAG, details=True, strict=False, debug
         # Big ugly patch to deal with APP2 (or other) data coming before APP1
         f.seek(0)
         # in theory, this could be insufficient since 64K is the maximum size--gd
-        data = f.read(base + 4000)
+        data = f.read(base + 5000)
         # base = 2
         while 1:
             logger.debug(" Segment base 0x%X", base)
@@ -204,7 +204,7 @@ def process_file(f, stop_tag=DEFAULT_STOP_TAG, details=True, strict=False, debug
         hdr.dump_ifd(ifd, ifd_name, stop_tag=stop_tag)
         ctr += 1
     # EXIF IFD
-    exif_off = hdr.tags.get('Image ExifOffset')
+    exif_off = hdr.tags['Image'].get('ExifOffset')
     if exif_off:
         logger.debug('Exif SubIFD at offset %d:', exif_off.values[0])
         hdr.dump_ifd(exif_off.values[0], 'EXIF', stop_tag=stop_tag)
@@ -212,7 +212,7 @@ def process_file(f, stop_tag=DEFAULT_STOP_TAG, details=True, strict=False, debug
     # deal with MakerNote contained in EXIF IFD
     # (Some apps use MakerNote tags but do not use a format for which we
     # have a description, do not process these).
-    if details and 'EXIF MakerNote' in hdr.tags and 'Image Make' in hdr.tags:
+    if details:
         hdr.decode_maker_note()
 
     # extract thumbnails
@@ -224,9 +224,9 @@ def process_file(f, stop_tag=DEFAULT_STOP_TAG, details=True, strict=False, debug
     if debug and details:
         xmp_string = b''
         # Easy we already have them
-        if 'Image ApplicationNotes' in hdr.tags:
+        if 'ApplicationNotes' in hdr.tags['Image']:
             logger.debug('XMP present in Exif')
-            xmp_string = make_string(hdr.tags['Image ApplicationNotes'].values)
+            xmp_string = make_string(hdr.tags['Image']['ApplicationNotes'].values)
         # We need to look in the entire file for the XML
         else:
             logger.debug('XMP not in Exif, searching file for XMP info ...')
